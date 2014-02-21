@@ -79,21 +79,21 @@ namespace osu_mp3
                         }
 
                         /**/
-                        using (StreamWriter newTask = new StreamWriter("output.txt", true))
-                        {
-                            newTask.WriteLine("\n[" + colectionID + "] " + artist + " - " + name);
-                            newTask.WriteLine("\t\t* " + beatID);
-                        }
+                        //using (StreamWriter newTask = new StreamWriter("output.txt", true))
+                        //{
+                        //    newTask.WriteLine("\n[" + colectionID + "] " + artist + " - " + name);
+                        //    newTask.WriteLine("\t\t* " + beatID);
+                        //}
                     }
                     else
                     {
-                        addnewID(file);
-                        beattotal++;
+                        //addnewID(file);
+                        //beattotal++;
                         /**/
-                        using (StreamWriter newTask = new StreamWriter("output.txt", true))
-                        {
-                            newTask.WriteLine("\t\t* "+beatID);
-                        }
+                        //using (StreamWriter newTask = new StreamWriter("output.txt", true))
+                        //{
+                        //    newTask.WriteLine("\t\t* "+beatID);
+                        //}
                     }
                     
                 }

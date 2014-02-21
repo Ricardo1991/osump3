@@ -19,23 +19,6 @@ namespace osu_mp3
 {
     public partial class Form1 : Form
     {
-        //[DllImport("user32.dll")]
-        //public static extern
-        //    bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, int vk);
-
-        //[DllImport("user32")]
-        //public static extern
-        //    bool GetMessage(ref Message lpMsg, IntPtr handle, uint mMsgFilterInMain, uint mMsgFilterMax);
-
-        //public const int MOD_ALT = 0x0001;
-        //public const int MOD_CONTROL = 0x0002;
-        //public const int MOD_SHIFT = 0x004;
-        //public const int MOD_NOREPEAT = 0x400;
-        //public const int WM_HOTKEY = 0x312;
-        //public const int NEXT = 0xB0;
-        //public const int PREV = 0xB1;
-        //public const int PLAY = 0xB3;
-
         List<Song> songs = new List<Song>();
         List<Song> songs2 = new List<Song>();
 
@@ -59,8 +42,6 @@ namespace osu_mp3
         public Form1()
         {
             InitializeComponent();
-
-            //RegisterHotKey(IntPtr.Zero, 1,  0, NEXT);
 
             backgroundWorker1.WorkerReportsProgress = true;
             backgroundWorker1.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
@@ -192,11 +173,11 @@ namespace osu_mp3
         void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             folders = subdirectoryEntries.Length;
-            using (StreamWriter newTask = new StreamWriter("output.txt", false))
-            {
-                newTask.WriteLine("** Beatmap ID listing **\n");
+            //using (StreamWriter newTask = new StreamWriter("output.txt", false))
+            //{
+            //    newTask.WriteLine("** Beatmap ID listing **\n");
 
-            }
+            //}
             foreach (string direct in subdirectoryEntries)
             {
                 float percentage = ((float)counter / (float)folders);
@@ -219,11 +200,11 @@ namespace osu_mp3
             this.listBox1.ValueMember = "index";
             toolStripLabel1.Text = counter.ToString() + " music(s) loaded in";
 
-            foreach (Song s in songs)
-            {
-                total = total + s.beattotal;
-            }
-            labelTotalBeats.Text = total.ToString() + " beatmap(s)";
+            //foreach (Song s in songs)
+            //{
+            //    total = total + s.beattotal;
+            //}
+            //labelTotalBeats.Text = total.ToString() + " beatmap(s)";
             
         }
 
