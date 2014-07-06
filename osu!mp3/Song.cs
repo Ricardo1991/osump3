@@ -10,12 +10,24 @@ namespace osu_mp3
 {
     class Song
     {
-        string name="";     //name of the song
+        string name = "";   //name of the song
         string artist = ""; //artist name
         string dir;         //osu song beatmap folder
-        string mp3file = "";//name of mp3 file
-        string tags="";     //search tags
-        string source = ""; //Song Source
+
+        public string Folder
+        {
+            get { return dir; }
+            set { dir = value; }
+        }
+        string mp3file = ""; //name of mp3 file
+
+        public string Mp3file
+        {
+            get { return mp3file; }
+            set { mp3file = value; }
+        }
+        string tags = " ";     //search tags
+        string source = " "; //Song Source
         int colectionID;    //BeatMapColectonID
         int beatID;         //BeatMap ID
 
@@ -36,11 +48,11 @@ namespace osu_mp3
         }
         public string getimagefile()
         {
-            return dir + @"\" + imagefile;
+            return Folder + @"\" + imagefile;
         }
-        public string getmp3file()
+        public string getmp3Dir()
         {
-            return dir + @"\"  + mp3file;
+            return Folder + @"\"  + Mp3file;
         }
         public string getartist()
         {
@@ -126,7 +138,7 @@ namespace osu_mp3
         {
             char[] delimit1 = { ' ' };
             char[] delimit2 = { '\\' };
-            string[] guru = dir.Split(delimit2);
+            string[] guru = Folder.Split(delimit2);
 
             string[] numb = guru[guru.Length-1].Split(delimit1, 2);
             
@@ -154,7 +166,7 @@ namespace osu_mp3
                 if (line.Contains("AudioFilename: ") == true)
                 {
                     string[] words = line.Split(delimit1, d);
-                    mp3file = words[1];
+                    Mp3file = words[1];
                 }
 
                 if (line.Contains("Title:") == true)

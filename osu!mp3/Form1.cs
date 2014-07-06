@@ -55,6 +55,7 @@ namespace osu_mp3
 
             toolStripProgressBar1.Visible = true;
 
+
             p = axWindowsMediaPlayer1.playlistCollection.newPlaylist("osu");
             
             backgroundWorker1.RunWorkerAsync();
@@ -75,7 +76,7 @@ namespace osu_mp3
             { 
                 if(song.index == ind)
                 {
-                    SongURL = song.getmp3file();
+                    SongURL = song.getmp3Dir();
                     axWindowsMediaPlayer1.URL = SongURL;
 
                     artist.Text = song.getartist();
@@ -190,7 +191,7 @@ namespace osu_mp3
 
         void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            int total = 0;
+            //int total = 0;
             toolStripProgressBar1.Visible = false;
 
             this.listBox1.DataSource = null;
@@ -243,6 +244,45 @@ namespace osu_mp3
             }
         }
 
+
+        private void copyAndTag(Song song)
+        {
+            string sourcePath = System.IO.Path.Combine(Settings.Default.dir , song.Folder);
+            string fileName = song.Mp3file;
+            string fileExtension=System.IO.Path.GetExtension(fileName);
+            string newFileName = song.getartist() + song.getname() + fileExtension;
+
+            foreach (char c in Path.GetInvalidFileNameChars())
+            {
+                newFileName = newFileName.Replace(c, '-');
+
+
+            }
+
+            string folder = song.Folder;
+
+            string sourceFile = song.getmp3Dir();
+
+            string targetPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)+"\\osump3 files";
+            string destFile = System.IO.Path.Combine(targetPath, newFileName);
+
+
+
+            if (!System.IO.Directory.Exists(targetPath))
+            {
+                System.IO.Directory.CreateDirectory(targetPath);
+            }
+
+            System.IO.File.Copy(sourceFile, destFile, true);
+
+            TagLib.File f = TagLib.File.Create(destFile);
+            f.Tag.Performers = null;
+            f.Tag.Performers = new []{song.getname()};
+            f.Tag.Title = song.getartist();
+            f.Save();
+            
+        
+        }
 
         private void textBox1_TextChanged(object sender, EventArgs e)       //SEARCH BAR CHANGED
         {
@@ -389,6 +429,26 @@ namespace osu_mp3
                     playSong(ind);
                 }
             }
+        }
+
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            ind = (int)listBox1.SelectedValue;
+
+            foreach (Song song in songs)
+            {
+                if (song.index == ind)
+                {
+                    copyAndTag(song);
+                    break;
+                }
+            }
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
 
     }

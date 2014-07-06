@@ -28,10 +28,10 @@ namespace osu_mp3.Properties {
         [global::System.Configuration.DefaultSettingValueAttribute("C:\\Program Files (x86)\\osu!\\Songs")]
         public string dir {
             get {
-                return ((string)(this["dir"]));
+                return ((string)(this["Dir"]));
             }
             set {
-                this["dir"] = value;
+                this["Dir"] = value;
             }
         }
     }
