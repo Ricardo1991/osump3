@@ -29,6 +29,12 @@ namespace osu_mp3
         string tags = " ";     //search tags
         string source = " "; //Song Source
         int colectionID;    //BeatMapColectonID
+
+        public int ColectionID
+        {
+            get { return colectionID; }
+            set { colectionID = value; }
+        }
         int beatID;         //BeatMap ID
 
         public int beattotal { get; set; }
@@ -93,7 +99,7 @@ namespace osu_mp3
                         /**/
                         //using (StreamWriter newTask = new StreamWriter("output.txt", true))
                         //{
-                        //    newTask.WriteLine("\n[" + colectionID + "] " + artist + " - " + name);
+                        //    newTask.WriteLine("\n[" + ColectionID + "] " + artist + " - " + name);
                         //    newTask.WriteLine("\t\t* " + beatID);
                         //}
                     }
@@ -200,7 +206,7 @@ namespace osu_mp3
                 if (line.Contains("BeatmapSetID:") == true)
                 {
                     string[] words = line.Split(delimit2, d);
-                    colectionID = Convert.ToInt32(words[1]);
+                    ColectionID = Convert.ToInt32(words[1]);
                 }
                 if (line.Contains("BeatmapID:") == true)
                 {

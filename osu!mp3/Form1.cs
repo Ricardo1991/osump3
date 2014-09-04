@@ -250,7 +250,7 @@ namespace osu_mp3
             string sourcePath = System.IO.Path.Combine(Settings.Default.dir , song.Folder);
             string fileName = song.Mp3file;
             string fileExtension=System.IO.Path.GetExtension(fileName);
-            string newFileName = song.getartist() + song.getname() + fileExtension;
+            string newFileName = song.ColectionID + song.getname() + fileExtension;
 
             foreach (char c in Path.GetInvalidFileNameChars())
             {
@@ -277,8 +277,8 @@ namespace osu_mp3
 
             TagLib.File f = TagLib.File.Create(destFile);
             f.Tag.Performers = null;
-            f.Tag.Performers = new []{song.getname()};
-            f.Tag.Title = song.getartist();
+            f.Tag.Performers = new[] { song.getartist() };
+            f.Tag.Title = song.getname();
             f.Save();
             
         
