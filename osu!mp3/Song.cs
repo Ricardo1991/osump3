@@ -69,7 +69,6 @@ namespace osu_mp3
             return name;
         }
 
-        bool found = false;
         List<int> sameSongBeatmaps = new List<int>() ;
 
         public Song(string dir, int counter)
@@ -84,36 +83,15 @@ namespace osu_mp3
             {
                 if (System.IO.Path.GetExtension(file) == ".osu")
                 {
-                    if (found == false)
-                    {
-                        setSongInfo(file);
-                        found = true;
-                        beattotal++;
 
-                        if (colectionID == 0)
-                        {
-                            colectionID = getFolderID();
+                    setSongInfo(file);
+                    beattotal++;
+
+                    if (colectionID == 0)
+                    {
+                        colectionID = getFolderID();
                         
-                        }
-
-                        /**/
-                        //using (StreamWriter newTask = new StreamWriter("output.txt", true))
-                        //{
-                        //    newTask.WriteLine("\n[" + ColectionID + "] " + artist + " - " + name);
-                        //    newTask.WriteLine("\t\t* " + beatID);
-                        //}
                     }
-                    else
-                    {
-                        //addnewID(file);
-                        //beattotal++;
-                        /**/
-                        //using (StreamWriter newTask = new StreamWriter("output.txt", true))
-                        //{
-                        //    newTask.WriteLine("\t\t* "+beatID);
-                        //}
-                    }
-                    
                 }
             
             }
@@ -144,24 +122,23 @@ namespace osu_mp3
         {
             char[] delimit1 = { ' ' };
             char[] delimit2 = { '\\' };
-            string[] guru = Folder.Split(delimit2);
+            string[] parts = Folder.Split(delimit2);
 
-            string[] numb = guru[guru.Length-1].Split(delimit1, 2);
+            string[] musicFolder = parts[parts.Length-1].Split(delimit1, 2);
             
-            int bah;
+            int id;
 
             try {
-                bah = Convert.ToInt32(numb[0]);
+                id = Convert.ToInt32(musicFolder[0]);
             }
-            catch { bah = 0; }
+            catch { id = 0; }
         
-            return bah;
+            return id;
         }
 
         void setSongInfo(string file)
         {
             string line;
-            int d = 2;
             char[] delimit1 = {' '};
             char[] delimit2 = {':'};
             char[] delimit3 = {'"'};
@@ -171,32 +148,32 @@ namespace osu_mp3
             {
                 if (line.Contains("AudioFilename: ") == true)
                 {
-                    string[] words = line.Split(delimit1, d);
+                    string[] words = line.Split(delimit1 , 2);
                     Mp3file = words[1];
                 }
 
                 if (line.Contains("Title:") == true)
                 {
-                    string[] words = line.Split(delimit2, d);
+                    string[] words = line.Split(delimit2, 2);
                     name = words[1];
                 }
 
                 if (line.Contains("Artist:") == true)
                 {
-                    string[] words = line.Split(delimit2, d);
+                    string[] words = line.Split(delimit2, 2);
                     artist = words[1];
                 }
                 if (line.Contains("Tags:") == true)
                 {
-                    string[] words = line.Split(delimit2, d);
+                    string[] words = line.Split(delimit2, 2);
                     tags = words[1];
                 } 
                 if (line.Contains("Source:") == true)
                 {
-                    string[] words = line.Split(delimit2, d);
+                    string[] words = line.Split(delimit2, 2);
                     source = words[1];
                 }
-                if (line.Contains("0,0,") == true &&  (line.Contains(".jpg") == true || line.Contains(".png") == true) )
+                if (line.Contains("0,0,") == true && (line.Contains(".jpg") == true || line.Contains(".png") == true) )
                 { 
                     string[] words = line.Split(delimit3, 3);
                     imagefile = words[1];
@@ -205,12 +182,12 @@ namespace osu_mp3
 
                 if (line.Contains("BeatmapSetID:") == true)
                 {
-                    string[] words = line.Split(delimit2, d);
+                    string[] words = line.Split(delimit2, 2);
                     ColectionID = Convert.ToInt32(words[1]);
                 }
                 if (line.Contains("BeatmapID:") == true)
                 {
-                    string[] words = line.Split(delimit2, d);
+                    string[] words = line.Split(delimit2, 2);
                     sameSongBeatmaps.Add(Convert.ToInt32(words[1]));
                     beatID = Convert.ToInt32(words[1]);
                 }

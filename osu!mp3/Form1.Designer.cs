@@ -34,30 +34,29 @@
             this.name = new System.Windows.Forms.Label();
             this.l_Artist = new System.Windows.Forms.Label();
             this.artist = new System.Windows.Forms.Label();
-            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.songListBox = new System.Windows.Forms.ListBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.changeDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuOptions = new System.Windows.Forms.ToolStripDropDownButton();
+            this.buttonChangeDir = new System.Windows.Forms.ToolStripMenuItem();
+            this.buttonRefresh = new System.Windows.Forms.ToolStripMenuItem();
+            this.buttonExport = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
-            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
-            this.labelTotalBeats = new System.Windows.Forms.ToolStripLabel();
+            this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.labelTotalSongs = new System.Windows.Forms.ToolStripLabel();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.searchTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.source = new System.Windows.Forms.Label();
             this.CheckSong = new System.Windows.Forms.Timer(this.components);
             this.b_next = new System.Windows.Forms.Button();
             this.b_previous = new System.Windows.Forms.Button();
             this.b_shuffle = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.axWindowsMediaPlayer1 = new AxWMPLib.AxWindowsMediaPlayer();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.songImage = new System.Windows.Forms.PictureBox();
+            this.mediaplayer = new AxWMPLib.AxWindowsMediaPlayer();
             this.toolStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.songImage)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mediaplayer)).BeginInit();
             this.SuspendLayout();
             // 
             // l_Name
@@ -102,80 +101,84 @@
             this.artist.Size = new System.Drawing.Size(0, 13);
             this.artist.TabIndex = 3;
             // 
-            // listBox1
+            // songListBox
             // 
-            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.songListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.HorizontalScrollbar = true;
-            this.listBox1.Location = new System.Drawing.Point(326, 49);
-            this.listBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(245, 238);
-            this.listBox1.TabIndex = 6;
-            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
-            this.listBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseDoubleClick_1);
+            this.songListBox.FormattingEnabled = true;
+            this.songListBox.HorizontalScrollbar = true;
+            this.songListBox.Location = new System.Drawing.Point(326, 49);
+            this.songListBox.Margin = new System.Windows.Forms.Padding(2);
+            this.songListBox.Name = "songListBox";
+            this.songListBox.Size = new System.Drawing.Size(245, 238);
+            this.songListBox.TabIndex = 6;
+            this.songListBox.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            this.songListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseDoubleClick_1);
             // 
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripDropDownButton1,
-            this.toolStripButton1,
+            this.menuOptions,
+            this.buttonExport,
             this.toolStripSeparator1,
-            this.toolStripProgressBar1,
-            this.toolStripLabel1,
-            this.labelTotalBeats});
+            this.progressBar,
+            this.labelTotalSongs});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(579, 25);
             this.toolStrip1.TabIndex = 8;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // toolStripDropDownButton1
+            // menuOptions
             // 
-            this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.changeDirectoryToolStripMenuItem,
-            this.refreshToolStripMenuItem});
-            this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(62, 22);
-            this.toolStripDropDownButton1.Text = "Options";
+            this.menuOptions.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.menuOptions.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.buttonChangeDir,
+            this.buttonRefresh});
+            this.menuOptions.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.menuOptions.Name = "menuOptions";
+            this.menuOptions.Size = new System.Drawing.Size(62, 22);
+            this.menuOptions.Text = "Options";
             // 
-            // changeDirectoryToolStripMenuItem
+            // buttonChangeDir
             // 
-            this.changeDirectoryToolStripMenuItem.Name = "changeDirectoryToolStripMenuItem";
-            this.changeDirectoryToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.changeDirectoryToolStripMenuItem.Text = "Change Directory";
-            this.changeDirectoryToolStripMenuItem.Click += new System.EventHandler(this.changeDirectoryToolStripMenuItem_Click);
+            this.buttonChangeDir.Name = "buttonChangeDir";
+            this.buttonChangeDir.Size = new System.Drawing.Size(166, 22);
+            this.buttonChangeDir.Text = "Change Directory";
+            this.buttonChangeDir.Click += new System.EventHandler(this.changeDirectoryToolStripMenuItem_Click);
             // 
-            // refreshToolStripMenuItem
+            // buttonRefresh
             // 
-            this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.refreshToolStripMenuItem.Text = "Refresh";
-            this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
+            this.buttonRefresh.Name = "buttonRefresh";
+            this.buttonRefresh.Size = new System.Drawing.Size(166, 22);
+            this.buttonRefresh.Text = "Refresh";
+            this.buttonRefresh.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
+            // 
+            // buttonExport
+            // 
+            this.buttonExport.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.buttonExport.Image = ((System.Drawing.Image)(resources.GetObject("buttonExport.Image")));
+            this.buttonExport.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonExport.Name = "buttonExport";
+            this.buttonExport.Size = new System.Drawing.Size(121, 22);
+            this.buttonExport.Text = "Export Selected Song";
+            this.buttonExport.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
-            // toolStripProgressBar1
+            // progressBar
             // 
-            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
-            this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 22);
-            this.toolStripProgressBar1.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(100, 22);
+            this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             // 
-            // toolStripLabel1
+            // labelTotalSongs
             // 
-            this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(0, 22);
-            // 
-            // labelTotalBeats
-            // 
-            this.labelTotalBeats.Name = "labelTotalBeats";
-            this.labelTotalBeats.Size = new System.Drawing.Size(0, 22);
+            this.labelTotalSongs.Name = "labelTotalSongs";
+            this.labelTotalSongs.Size = new System.Drawing.Size(0, 22);
             // 
             // folderBrowserDialog1
             // 
@@ -183,17 +186,17 @@
             this.folderBrowserDialog1.SelectedPath = "C:\\Program Files (x86)\\osu!\\Songs";
             this.folderBrowserDialog1.ShowNewFolderButton = false;
             // 
-            // textBox1
+            // searchTextBox
             // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.searchTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.textBox1.Location = new System.Drawing.Point(326, 25);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(245, 20);
-            this.textBox1.TabIndex = 14;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.searchTextBox.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.searchTextBox.Location = new System.Drawing.Point(326, 25);
+            this.searchTextBox.Margin = new System.Windows.Forms.Padding(2);
+            this.searchTextBox.Name = "searchTextBox";
+            this.searchTextBox.Size = new System.Drawing.Size(245, 20);
+            this.searchTextBox.TabIndex = 14;
+            this.searchTextBox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // label1
             // 
@@ -255,40 +258,31 @@
             this.b_shuffle.UseVisualStyleBackColor = false;
             this.b_shuffle.Click += new System.EventHandler(this.b_shuffle_Click);
             // 
-            // pictureBox1
+            // songImage
             // 
-            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.songImage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox1.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.InitialImage")));
-            this.pictureBox1.Location = new System.Drawing.Point(6, 86);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(315, 201);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 21;
-            this.pictureBox1.TabStop = false;
+            this.songImage.InitialImage = ((System.Drawing.Image)(resources.GetObject("songImage.InitialImage")));
+            this.songImage.Location = new System.Drawing.Point(6, 86);
+            this.songImage.Name = "songImage";
+            this.songImage.Size = new System.Drawing.Size(315, 201);
+            this.songImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.songImage.TabIndex = 21;
+            this.songImage.TabStop = false;
+            this.songImage.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
-            // axWindowsMediaPlayer1
+            // mediaplayer
             // 
-            this.axWindowsMediaPlayer1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.axWindowsMediaPlayer1.Enabled = true;
-            this.axWindowsMediaPlayer1.Location = new System.Drawing.Point(0, 289);
-            this.axWindowsMediaPlayer1.Name = "axWindowsMediaPlayer1";
-            this.axWindowsMediaPlayer1.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axWindowsMediaPlayer1.OcxState")));
-            this.axWindowsMediaPlayer1.Size = new System.Drawing.Size(579, 45);
-            this.axWindowsMediaPlayer1.TabIndex = 17;
-            this.axWindowsMediaPlayer1.PlayStateChange += new AxWMPLib._WMPOCXEvents_PlayStateChangeEventHandler(this.axWindowsMediaPlayer1_PlayStateChange);
-            this.axWindowsMediaPlayer1.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.axWindowsMediaPlayer1_PreviewKeyDown);
-            // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(121, 22);
-            this.toolStripButton1.Text = "Export Selected Song";
-            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+            this.mediaplayer.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.mediaplayer.Enabled = true;
+            this.mediaplayer.Location = new System.Drawing.Point(0, 289);
+            this.mediaplayer.Name = "mediaplayer";
+            this.mediaplayer.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("mediaplayer.OcxState")));
+            this.mediaplayer.Size = new System.Drawing.Size(579, 45);
+            this.mediaplayer.TabIndex = 17;
+            this.mediaplayer.PlayStateChange += new AxWMPLib._WMPOCXEvents_PlayStateChangeEventHandler(this.axWindowsMediaPlayer1_PlayStateChange);
+            this.mediaplayer.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.axWindowsMediaPlayer1_PreviewKeyDown);
             // 
             // Form1
             // 
@@ -296,13 +290,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(579, 334);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.songImage);
             this.Controls.Add(this.b_shuffle);
             this.Controls.Add(this.b_previous);
             this.Controls.Add(this.b_next);
-            this.Controls.Add(this.axWindowsMediaPlayer1);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.listBox1);
+            this.Controls.Add(this.mediaplayer);
+            this.Controls.Add(this.searchTextBox);
+            this.Controls.Add(this.songListBox);
             this.Controls.Add(this.source);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.toolStrip1);
@@ -314,11 +308,12 @@
             this.MinimumSize = new System.Drawing.Size(595, 373);
             this.Name = "Form1";
             this.Text = "osu!mp3";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.axWindowsMediaPlayer1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.songImage)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mediaplayer)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -330,27 +325,26 @@
         private System.Windows.Forms.Label name;
         private System.Windows.Forms.Label l_Artist;
         private System.Windows.Forms.Label artist;
-        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.ListBox songListBox;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
-        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
-        private System.Windows.Forms.ToolStripMenuItem changeDirectoryToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
-        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
+        private System.Windows.Forms.ToolStripDropDownButton menuOptions;
+        private System.Windows.Forms.ToolStripProgressBar progressBar;
+        private System.Windows.Forms.ToolStripMenuItem buttonChangeDir;
+        private System.Windows.Forms.ToolStripMenuItem buttonRefresh;
+        private System.Windows.Forms.ToolStripLabel labelTotalSongs;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox searchTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label source;
-        private AxWMPLib.AxWindowsMediaPlayer axWindowsMediaPlayer1;
+        private AxWMPLib.AxWindowsMediaPlayer mediaplayer;
         private System.Windows.Forms.Timer CheckSong;
         private System.Windows.Forms.Button b_next;
         private System.Windows.Forms.Button b_previous;
         private System.Windows.Forms.Button b_shuffle;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.ToolStripLabel labelTotalBeats;
-        private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.PictureBox songImage;
+        private System.Windows.Forms.ToolStripButton buttonExport;
     }
 }
 

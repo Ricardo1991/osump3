@@ -9,7 +9,7 @@ using System.Resources;
 [assembly: AssemblyTitle("osu!mp3")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Hewlett-Packard")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("osu!mp3")]
 [assembly: AssemblyCopyright("Ricardo1991")]
 [assembly: AssemblyTrademark("Ricardo1991")]

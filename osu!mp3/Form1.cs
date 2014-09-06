@@ -53,86 +53,76 @@ namespace osu_mp3
 
             subdirectoryEntries = Directory.GetDirectories(@osuDir);
 
-            toolStripProgressBar1.Visible = true;
-
-
-            p = axWindowsMediaPlayer1.playlistCollection.newPlaylist("osu");
-            
+            progressBar.Visible = true;
+         
             backgroundWorker1.RunWorkerAsync();
-
-            axWindowsMediaPlayer1.currentPlaylist = p;
         }
 
         private void playSong(int ind)
         {
             GC.Collect();
 
-            string SongURL;
+            string songDir;
 
             if (Shuffle == true)
-                shuffleHistory.Add(ind);//Add this song to the shuffle history
+                shuffleHistory.Add(ind); //Add this song to the shuffle history
 
             foreach (Song song in songs)
             { 
                 if(song.index == ind)
                 {
-                    SongURL = song.getmp3Dir();
-                    axWindowsMediaPlayer1.URL = SongURL;
+                    songDir = song.getmp3Dir();
+                    mediaplayer.URL = songDir;
 
                     artist.Text = song.getartist();
                     name.Text = song.getname();
                     source.Text = song.getSource();
                     if (song.hasPicture == true)
-                        pictureBox1.ImageLocation = song.getimagefile();
+                        songImage.ImageLocation = song.getimagefile();
                     else
-                        pictureBox1.Image = osu_mp3.Properties.Resources.sliderpoint10;
+                        songImage.Image = osu_mp3.Properties.Resources.sliderpoint10;
                     break;
                 }
             }
             
-            axWindowsMediaPlayer1.Ctlcontrols.play();
-
-            if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsReady)
-            {
-                axWindowsMediaPlayer1.Ctlcontrols.play();
-            }
+            mediaplayer.Ctlcontrols.play();
         }
 
-        private void playnextSong(int ind)
+        private void playnextSong(int id)
         {
-            axWindowsMediaPlayer1.Ctlcontrols.stop();
+            mediaplayer.Ctlcontrols.stop();
 
             if (Shuffle == false)
             {
-                if (listBox1.SelectedIndex + 1 == (int)listBox1.Items.Count)
+                if (songListBox.SelectedIndex + 1 == (int)songListBox.Items.Count)
                 {
-                    listBox1.SelectedIndex = 0;
-                    ind = (int)listBox1.SelectedValue;
+                    songListBox.SelectedIndex = 0;
+                    id = (int)songListBox.SelectedValue;
                 }
                 else
                 {
-                    listBox1.SelectedIndex = listBox1.SelectedIndex + 1;
-                    ind = (int)listBox1.SelectedValue;
+                    songListBox.SelectedIndex = songListBox.SelectedIndex + 1;
+                    id = (int)songListBox.SelectedValue;
                 }
 
             }
             else {
-                if (listBox1.Items.Count > 1)
+                if (songListBox.Items.Count > 1)
                 {
                     bool isNew = true;
-                    int previousSong = listBox1.SelectedIndex;
+                    int previousSong = songListBox.SelectedIndex;
 
-                    if (shuffleHistory.Count >= listBox1.Items.Count)                                       //If all songs were played, clear and start over
+                    if (shuffleHistory.Count >= songListBox.Items.Count)                                       //If all songs were played, clear and start over
                     {
                         shuffleHistory.Clear();
                     }
                     do{
-                        listBox1.SelectedIndex = rnd.Next((int)listBox1.Items.Count);                       //Prevent the same song for being played twice
+                        songListBox.SelectedIndex = rnd.Next((int)songListBox.Items.Count);                       //Prevent the same song for being played twice
                         isNew = true;
 
-                        foreach (int id in shuffleHistory)
+                        foreach (int id2 in shuffleHistory)
                         {
-                            if (id == (int)listBox1.SelectedValue || listBox1.SelectedIndex == previousSong) //Dont play the same song twice in a row
+                            if (id2 == (int)songListBox.SelectedValue || songListBox.SelectedIndex == previousSong) //Dont play the same song twice in a row
                                 isNew = false;
                         }
 
@@ -140,50 +130,45 @@ namespace osu_mp3
                     }
                     while (isNew == false);
 
-                    ind = (int)listBox1.SelectedValue;
+                    id = (int)songListBox.SelectedValue;
                 }
                 else
                 {
-                    listBox1.SelectedIndex = listBox1.SelectedIndex;
-                    ind = (int)listBox1.SelectedValue;
+                    songListBox.SelectedIndex = songListBox.SelectedIndex;
+                    id = (int)songListBox.SelectedValue;
                 }
-                
             }
 
-            playSong(ind);
+            playSong(id);
 
         }
 
         private void listBox1_MouseDoubleClick_1(object sender, MouseEventArgs e)
         {
-            ind = (int)this.listBox1.SelectedValue;
+            int id = (int)this.songListBox.SelectedValue;
 
-            if (ind != System.Windows.Forms.ListBox.NoMatches)
+            if (id != System.Windows.Forms.ListBox.NoMatches)
             {
-                playSong(ind);
+                playSong(id);
             }
         }
 
         private void Player_MediaError(object pMediaObject)
         {
             MessageBox.Show("Cannot play media file.");
-            axWindowsMediaPlayer1.Ctlcontrols.stop();
+            mediaplayer.Ctlcontrols.stop();
         }
 
         // On worker thread so do our thing!
         void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             folders = subdirectoryEntries.Length;
-            //using (StreamWriter newTask = new StreamWriter("output.txt", false))
-            //{
-            //    newTask.WriteLine("** Beatmap ID listing **\n");
 
-            //}
-            foreach (string direct in subdirectoryEntries)
+            foreach (string directory in subdirectoryEntries)
             {
                 float percentage = ((float)counter / (float)folders);
                 backgroundWorker1.ReportProgress((int)(percentage * 100));
-                songs.Add(new Song(@direct, counter));
+                songs.Add(new Song(directory, counter));
 
                 counter++;
             }
@@ -192,31 +177,24 @@ namespace osu_mp3
         void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             //int total = 0;
-            toolStripProgressBar1.Visible = false;
+            progressBar.Visible = false;
 
-            this.listBox1.DataSource = null;
-            this.listBox1.DataSource = songs;
+            this.songListBox.DataSource = null;
+            this.songListBox.DataSource = songs;
 
-            this.listBox1.DisplayMember = "fullname";
-            this.listBox1.ValueMember = "index";
-            toolStripLabel1.Text = counter.ToString() + " music(s) loaded in";
-
-            //foreach (Song s in songs)
-            //{
-            //    total = total + s.beattotal;
-            //}
-            //labelTotalBeats.Text = total.ToString() + " beatmap(s)";
-            
+            this.songListBox.DisplayMember = "fullname";
+            this.songListBox.ValueMember = "index";
+            labelTotalSongs.Text = counter.ToString() + " music(s) loaded in";
         }
 
         void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            toolStripProgressBar1.Value = e.ProgressPercentage;
+            progressBar.Value = e.ProgressPercentage;
         }
 
         private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            toolStripProgressBar1.Visible = true;
+            progressBar.Visible = true;
             songs.Clear();
             counter = 0;
             backgroundWorker1.RunWorkerAsync();
@@ -236,7 +214,7 @@ namespace osu_mp3
                 osuDir = this.folderBrowserDialog1.SelectedPath;
                 subdirectoryEntries = Directory.GetDirectories(@osuDir);
 
-                toolStripProgressBar1.Visible = true;
+                progressBar.Visible = true;
                 backgroundWorker1.RunWorkerAsync();
 
                 Settings.Default.dir = @osuDir;
@@ -250,7 +228,7 @@ namespace osu_mp3
             string sourcePath = System.IO.Path.Combine(Settings.Default.dir , song.Folder);
             string fileName = song.Mp3file;
             string fileExtension=System.IO.Path.GetExtension(fileName);
-            string newFileName = song.ColectionID + song.getname() + fileExtension;
+            string newFileName = song.ColectionID +" - "+ song.getname() + fileExtension;
 
             foreach (char c in Path.GetInvalidFileNameChars())
             {
@@ -286,18 +264,18 @@ namespace osu_mp3
 
         private void textBox1_TextChanged(object sender, EventArgs e)       //SEARCH BAR CHANGED
         {
-            if (!string.IsNullOrEmpty(textBox1.Text))
+            if (!string.IsNullOrEmpty(searchTextBox.Text))
             {
                 songs2.Clear();
-                this.listBox1.DataSource = null;
-                this.listBox1.DataSource = songs2;
+                this.songListBox.DataSource = null;
+                this.songListBox.DataSource = songs2;
 
                 foreach (Song song in songs)
                 {
-                    if (song.getartist().ToLower().Contains(textBox1.Text.ToLower()) || 
-                        song.getname().ToLower().Contains(textBox1.Text.ToLower()) || 
-                        song.getTags().ToLower().Contains(textBox1.Text.ToLower()) || 
-                        song.getSource().ToLower().Contains(textBox1.Text.ToLower()))
+                    if (song.getartist().ToLower().Contains(searchTextBox.Text.ToLower()) || 
+                        song.getname().ToLower().Contains(searchTextBox.Text.ToLower()) || 
+                        song.getTags().ToLower().Contains(searchTextBox.Text.ToLower()) || 
+                        song.getSource().ToLower().Contains(searchTextBox.Text.ToLower()))
                     {
                         songs2.Add(song);
                     }
@@ -305,12 +283,12 @@ namespace osu_mp3
             }
             else
             {
-                this.listBox1.DataSource = null;
-                this.listBox1.DataSource = songs;
+                this.songListBox.DataSource = null;
+                this.songListBox.DataSource = songs;
 
             }
-            this.listBox1.DisplayMember = "fullname";
-            this.listBox1.ValueMember = "index";
+            this.songListBox.DisplayMember = "fullname";
+            this.songListBox.ValueMember = "index";
         }
 
         private void CheckSong_Tick(object sender, EventArgs e)
@@ -325,7 +303,7 @@ namespace osu_mp3
 
         private void axWindowsMediaPlayer1_PlayStateChange(object sender, AxWMPLib._WMPOCXEvents_PlayStateChangeEvent e)
         {
-            if (axWindowsMediaPlayer1.playState == WMPLib.WMPPlayState.wmppsMediaEnded)
+            if (mediaplayer.playState == WMPLib.WMPPlayState.wmppsMediaEnded)
             {
                 SongEnded = true;
                 CheckSong.Start();
@@ -340,17 +318,17 @@ namespace osu_mp3
 
         private void b_previous_Click(object sender, EventArgs e)
         {
-            axWindowsMediaPlayer1.Ctlcontrols.stop();
+            mediaplayer.Ctlcontrols.stop();
 
-            if (listBox1.SelectedIndex - 1 < 0)
+            if (songListBox.SelectedIndex - 1 < 0)
             {
-                listBox1.SelectedIndex = (int)listBox1.Items.Count-1;
-                ind = (int)listBox1.SelectedValue;
+                songListBox.SelectedIndex = (int)songListBox.Items.Count-1;
+                ind = (int)songListBox.SelectedValue;
             }
             else
             {
-                listBox1.SelectedIndex = listBox1.SelectedIndex - 1;
-                ind = (int)listBox1.SelectedValue;
+                songListBox.SelectedIndex = songListBox.SelectedIndex - 1;
+                ind = (int)songListBox.SelectedValue;
             }
 
             playSong(ind);
@@ -384,17 +362,17 @@ namespace osu_mp3
             {
                 if (Shuffle == false)
                 {
-                    axWindowsMediaPlayer1.Ctlcontrols.stop();
+                    mediaplayer.Ctlcontrols.stop();
 
-                    if (listBox1.SelectedIndex - 1 < 0)
+                    if (songListBox.SelectedIndex - 1 < 0)
                     {
-                        listBox1.SelectedIndex = (int)listBox1.Items.Count - 1;
-                        ind = (int)listBox1.SelectedValue;
+                        songListBox.SelectedIndex = (int)songListBox.Items.Count - 1;
+                        ind = (int)songListBox.SelectedValue;
                     }
                     else
                     {
-                        listBox1.SelectedIndex = listBox1.SelectedIndex - 1;
-                        ind = (int)listBox1.SelectedValue;
+                        songListBox.SelectedIndex = songListBox.SelectedIndex - 1;
+                        ind = (int)songListBox.SelectedValue;
                     }
 
                     playSong(ind);
@@ -413,17 +391,17 @@ namespace osu_mp3
             {
                 if (Shuffle == false)
                 {
-                    axWindowsMediaPlayer1.Ctlcontrols.stop();
+                    mediaplayer.Ctlcontrols.stop();
 
-                    if (listBox1.SelectedIndex - 1 < 0)
+                    if (songListBox.SelectedIndex - 1 < 0)
                     {
-                        listBox1.SelectedIndex = (int)listBox1.Items.Count - 1;
-                        ind = (int)listBox1.SelectedValue;
+                        songListBox.SelectedIndex = (int)songListBox.Items.Count - 1;
+                        ind = (int)songListBox.SelectedValue;
                     }
                     else
                     {
-                        listBox1.SelectedIndex = listBox1.SelectedIndex - 1;
-                        ind = (int)listBox1.SelectedValue;
+                        songListBox.SelectedIndex = songListBox.SelectedIndex - 1;
+                        ind = (int)songListBox.SelectedValue;
                     }
 
                     playSong(ind);
@@ -434,7 +412,7 @@ namespace osu_mp3
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            ind = (int)listBox1.SelectedValue;
+            ind = (int)songListBox.SelectedValue;
 
             foreach (Song song in songs)
             {
@@ -447,6 +425,16 @@ namespace osu_mp3
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
         {
 
         }
