@@ -33,10 +33,10 @@ namespace osu_mp3
         {
             InitializeComponent();
 
-            backgroundWorker1.WorkerReportsProgress = true;
-            backgroundWorker1.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
-            backgroundWorker1.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
-            backgroundWorker1.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundWorker_RunWorkerCompleted);
+            loader1.WorkerReportsProgress = true;
+            loader1.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
+            loader1.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
+            loader1.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundWorker_RunWorkerCompleted);
 
             exporter1.WorkerReportsProgress = true;
             exporter1.DoWork += new DoWorkEventHandler(exporter1_DoWork);
@@ -56,7 +56,7 @@ namespace osu_mp3
 
             progressBar.Visible = true;
          
-            backgroundWorker1.RunWorkerAsync();
+            loader1.RunWorkerAsync();
         }
 
         private void playSong(int ind)
@@ -169,7 +169,7 @@ namespace osu_mp3
             foreach (string directory in subdirectoryEntries)
             {
                 float percentage = ((float)counter / (float)folders);
-                backgroundWorker1.ReportProgress((int)(percentage * 100));
+                loader1.ReportProgress((int)(percentage * 100));
                 songs.Add(new Song(directory, counter));
 
                 counter++;
@@ -201,7 +201,7 @@ namespace osu_mp3
             progressBar.Visible = true;
             songs.Clear();
             counter = 0;
-            backgroundWorker1.RunWorkerAsync();
+            loader1.RunWorkerAsync();
         }
 
         private void changeDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -219,7 +219,7 @@ namespace osu_mp3
                 subdirectoryEntries = Directory.GetDirectories(@osuDir);
 
                 progressBar.Visible = true;
-                backgroundWorker1.RunWorkerAsync();
+                loader1.RunWorkerAsync();
 
                 Settings.Default.dir = @osuDir;
                 Settings.Default.Save();
@@ -243,12 +243,20 @@ namespace osu_mp3
 
             string sourceFile = song.getmp3Dir();
 
+            string artistFolder = song.getartist();
 
+            artistFolder = artistFolder.Replace("*", "");
+            artistFolder = artistFolder.Replace(":", "");
 
-            string targetPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\osump3\\" + song.getartist(); ;
+            foreach (char b in Path.GetInvalidPathChars())
+            {
+                artistFolder = artistFolder.Replace(b.ToString(), "");
+            }
+
+            string targetPath = @Settings.Default.exportDir + "\\" + artistFolder;
 
             targetPath = targetPath.Replace("*", "");
-            targetPath = targetPath.Replace(":", "");
+            
             foreach (char b in Path.GetInvalidPathChars())
             {
                 targetPath = targetPath.Replace(b.ToString(), "");
@@ -281,21 +289,42 @@ namespace osu_mp3
 
         private void textBox1_TextChanged(object sender, EventArgs e)       //SEARCH BAR CHANGED
         {
-            if (!string.IsNullOrEmpty(searchTextBox.Text))
+            if (!string.IsNullOrWhiteSpace(searchTextBox.Text))
             {
                 songs2.Clear();
                 this.songListBox.DataSource = null;
                 this.songListBox.DataSource = songs2;
 
+                string[] searchResults;
+
+                searchResults = searchTextBox.Text.ToLower().Split(new char[] { ' ' });
+
                 foreach (Song song in songs)
                 {
-                    if (song.getartist().ToLower().Contains(searchTextBox.Text.ToLower()) || 
-                        song.getname().ToLower().Contains(searchTextBox.Text.ToLower()) || 
-                        song.getTags().ToLower().Contains(searchTextBox.Text.ToLower()) || 
-                        song.getSource().ToLower().Contains(searchTextBox.Text.ToLower()))
+                    if (song.getartist().ToLower().Contains(searchResults[0]) ||
+                        song.getname().ToLower().Contains(searchResults[0]) ||
+                        song.getTags().ToLower().Contains(searchResults[0]) ||
+                        song.getSource().ToLower().Contains(searchResults[0]))
                     {
                         songs2.Add(song);
                     }
+
+                    foreach (string query in searchResults)
+                    {
+                        if (query != searchResults[0])
+                        {
+                            if (!song.getartist().ToLower().Contains(query) &&
+                                !song.getname().ToLower().Contains(query)   &&
+                                !song.getTags().ToLower().Contains(query)   &&
+                                !song.getSource().ToLower().Contains(query))
+                            {
+                                songs2.Remove(song);
+                            }
+                        }
+
+                    }
+
+
                 }
             }
             else
@@ -460,27 +489,27 @@ namespace osu_mp3
         private void exportSearchResult(object sender, EventArgs e)
         {
             if (!exporting && !refreshing)
-            {
-                exporting = true;
                 exporter2.RunWorkerAsync();
-            }
+
+            progressBar.Visible = true;
 
         }
 
         private void exportAll(object sender, EventArgs e)
         {
             if(!exporting && !refreshing)
-            {
-                exporting = true;
                 exporter1.RunWorkerAsync();
-            }
+
+            progressBar.Visible = true;
+            
         }
 
         void exporter1_DoWork(object sender, DoWorkEventArgs e)
         {
             int count = 0;
             int total = songs.Count;
-            progressBar.Visible = true;
+            
+            exporting = true;
 
             foreach (Song song in songs)
             {
@@ -491,31 +520,24 @@ namespace osu_mp3
 
         }
 
-        void exporter1_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            progressBar.Value = e.ProgressPercentage;
-        }
-
-        void exporter1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            progressBar.Visible = false;
-            exporting = false;
-        }
-
-
         void exporter2_DoWork(object sender, DoWorkEventArgs e)
         {
             int count = 0;
-            int total = songs.Count;
-            progressBar.Visible = true;
+            int total = songs2.Count;
+            exporting = true;
 
             foreach (Song song in songs2)
             {
                 copyAndTag(song);
                 count++;
-                exporter1.ReportProgress((int)((count / total) * 100));
+                exporter2.ReportProgress((int)((count / total) * 100));
             }
 
+        }
+
+        void exporter1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            progressBar.Value = e.ProgressPercentage;
         }
 
         void exporter2_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -523,10 +545,27 @@ namespace osu_mp3
             progressBar.Value = e.ProgressPercentage;
         }
 
+
+        void exporter1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            progressBar.Visible = false;
+            exporting = false;
+        }
         void exporter2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             progressBar.Visible = false;
             exporting = false;
+        }
+
+        private void changeExportDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult result = this.folderBrowserDialog1.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                string dir = this.folderBrowserDialog1.SelectedPath;
+                Settings.Default.exportDir = @dir;
+                Settings.Default.Save();
+            }
         }
 
 

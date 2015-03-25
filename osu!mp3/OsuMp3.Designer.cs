@@ -35,7 +35,7 @@
             this.l_Artist = new System.Windows.Forms.Label();
             this.artist = new System.Windows.Forms.Label();
             this.songListBox = new System.Windows.Forms.ListBox();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.loader1 = new System.ComponentModel.BackgroundWorker();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.menuOptions = new System.Windows.Forms.ToolStripDropDownButton();
             this.buttonChangeDir = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,6 +59,8 @@
             this.songImage = new System.Windows.Forms.PictureBox();
             this.exporter1 = new System.ComponentModel.BackgroundWorker();
             this.exporter2 = new System.ComponentModel.BackgroundWorker();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.changeExportDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mediaplayer)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.songImage)).BeginInit();
@@ -148,14 +150,14 @@
             // buttonChangeDir
             // 
             this.buttonChangeDir.Name = "buttonChangeDir";
-            this.buttonChangeDir.Size = new System.Drawing.Size(166, 22);
-            this.buttonChangeDir.Text = "Change Directory";
+            this.buttonChangeDir.Size = new System.Drawing.Size(192, 22);
+            this.buttonChangeDir.Text = "Change OSU Directory";
             this.buttonChangeDir.Click += new System.EventHandler(this.changeDirectoryToolStripMenuItem_Click);
             // 
             // buttonRefresh
             // 
             this.buttonRefresh.Name = "buttonRefresh";
-            this.buttonRefresh.Size = new System.Drawing.Size(166, 22);
+            this.buttonRefresh.Size = new System.Drawing.Size(192, 22);
             this.buttonRefresh.Text = "Refresh";
             this.buttonRefresh.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
             // 
@@ -165,7 +167,9 @@
             this.exportMenus.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.selectedSongToolStripMenuItem,
             this.searchResultToolStripMenuItem,
-            this.allToolStripMenuItem});
+            this.allToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.changeExportDirectoryToolStripMenuItem});
             this.exportMenus.Image = ((System.Drawing.Image)(resources.GetObject("exportMenus.Image")));
             this.exportMenus.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.exportMenus.Name = "exportMenus";
@@ -175,21 +179,21 @@
             // selectedSongToolStripMenuItem
             // 
             this.selectedSongToolStripMenuItem.Name = "selectedSongToolStripMenuItem";
-            this.selectedSongToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.selectedSongToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.selectedSongToolStripMenuItem.Text = "Selected Song";
             this.selectedSongToolStripMenuItem.Click += new System.EventHandler(this.exportSelected);
             // 
             // searchResultToolStripMenuItem
             // 
             this.searchResultToolStripMenuItem.Name = "searchResultToolStripMenuItem";
-            this.searchResultToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.searchResultToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.searchResultToolStripMenuItem.Text = "Search Result";
             this.searchResultToolStripMenuItem.Click += new System.EventHandler(this.exportSearchResult);
             // 
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.allToolStripMenuItem.Text = "All";
             this.allToolStripMenuItem.Click += new System.EventHandler(this.exportAll);
             // 
@@ -313,6 +317,18 @@
             this.songImage.TabStop = false;
             this.songImage.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(199, 6);
+            // 
+            // changeExportDirectoryToolStripMenuItem
+            // 
+            this.changeExportDirectoryToolStripMenuItem.Name = "changeExportDirectoryToolStripMenuItem";
+            this.changeExportDirectoryToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.changeExportDirectoryToolStripMenuItem.Text = "Change Export Directory";
+            this.changeExportDirectoryToolStripMenuItem.Click += new System.EventHandler(this.changeExportDirectoryToolStripMenuItem_Click);
+            // 
             // OsuMp3
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -355,7 +371,7 @@
         private System.Windows.Forms.Label l_Artist;
         private System.Windows.Forms.Label artist;
         private System.Windows.Forms.ListBox songListBox;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.ComponentModel.BackgroundWorker loader1;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton menuOptions;
         private System.Windows.Forms.ToolStripProgressBar progressBar;
@@ -379,6 +395,8 @@
         private System.Windows.Forms.ToolStripMenuItem allToolStripMenuItem;
         private System.ComponentModel.BackgroundWorker exporter1;
         private System.ComponentModel.BackgroundWorker exporter2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem changeExportDirectoryToolStripMenuItem;
     }
 }
 

@@ -34,5 +34,17 @@ namespace osu_mp3.Properties {
                 this["dir"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\osump3")]
+        public string exportDir {
+            get {
+                return ((string)(this["exportDir"]));
+            }
+            set {
+                this["exportDir"] = value;
+            }
+        }
     }
 }
