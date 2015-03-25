@@ -1,31 +1,18 @@
 ﻿using osu_mp3.Properties;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using WMPLib;
-using System.Runtime.InteropServices;
 
 namespace osu_mp3
 {
-    public partial class Form1 : Form
+    public partial class OsuMp3 : Form
     {
         List<Song> songs = new List<Song>();
         List<Song> songs2 = new List<Song>();
 
         List<int> shuffleHistory= new List<int>();
-
-        public WMPLib.IWMPPlaylist p;
-        public WMPLib.IWMPMedia temp;
 
         int ind = 0;
         int folders;
@@ -39,7 +26,10 @@ namespace osu_mp3
 
         Random rnd = new Random();
 
-        public Form1()
+        bool refreshing = true;
+        bool exporting = false;
+
+        public OsuMp3()
         {
             InitializeComponent();
 
@@ -47,6 +37,17 @@ namespace osu_mp3
             backgroundWorker1.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
             backgroundWorker1.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
             backgroundWorker1.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundWorker_RunWorkerCompleted);
+
+            exporter1.WorkerReportsProgress = true;
+            exporter1.DoWork += new DoWorkEventHandler(exporter1_DoWork);
+            exporter1.ProgressChanged += new ProgressChangedEventHandler(exporter1_ProgressChanged);
+            exporter1.RunWorkerCompleted += new RunWorkerCompletedEventHandler(exporter1_RunWorkerCompleted);
+
+            exporter2.WorkerReportsProgress = true;
+            exporter2.DoWork += new DoWorkEventHandler(exporter2_DoWork);
+            exporter2.ProgressChanged += new ProgressChangedEventHandler(exporter2_ProgressChanged);
+            exporter2.RunWorkerCompleted += new RunWorkerCompletedEventHandler(exporter2_RunWorkerCompleted);
+
             
 
             osuDir = @Settings.Default.dir;
@@ -163,6 +164,7 @@ namespace osu_mp3
         void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             folders = subdirectoryEntries.Length;
+            refreshing = true;
 
             foreach (string directory in subdirectoryEntries)
             {
@@ -185,6 +187,8 @@ namespace osu_mp3
             this.songListBox.DisplayMember = "fullname";
             this.songListBox.ValueMember = "index";
             labelTotalSongs.Text = counter.ToString() + " music(s) loaded in";
+
+            refreshing = false;
         }
 
         void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -233,17 +237,25 @@ namespace osu_mp3
             foreach (char c in Path.GetInvalidFileNameChars())
             {
                 newFileName = newFileName.Replace(c, '-');
-
-
             }
 
             string folder = song.Folder;
 
             string sourceFile = song.getmp3Dir();
 
-            string targetPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)+"\\osump3 files";
-            string destFile = System.IO.Path.Combine(targetPath, newFileName);
 
+
+            string targetPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\osump3\\" + song.getartist(); ;
+
+            targetPath = targetPath.Replace("*", "");
+            targetPath = targetPath.Replace(":", "");
+            foreach (char b in Path.GetInvalidPathChars())
+            {
+                targetPath = targetPath.Replace(b.ToString(), "");
+            }
+
+
+            string destFile = System.IO.Path.Combine(targetPath, newFileName);
 
 
             if (!System.IO.Directory.Exists(targetPath))
@@ -251,15 +263,20 @@ namespace osu_mp3
                 System.IO.Directory.CreateDirectory(targetPath);
             }
 
-            System.IO.File.Copy(sourceFile, destFile, true);
+            try
+            {
+                System.IO.File.Copy(sourceFile, destFile, true);
 
-            TagLib.File f = TagLib.File.Create(destFile);
-            f.Tag.Performers = null;
-            f.Tag.Performers = new[] { song.getartist() };
-            f.Tag.Title = song.getname();
-            f.Save();
-            
-        
+                TagLib.File f = TagLib.File.Create(destFile);
+                f.Tag.Performers = new[] { song.getartist() };
+                f.Tag.AlbumArtists = new[] { song.getartist() };
+                f.Tag.Title = song.getname();
+                f.Tag.Album = song.getSource();
+                f.Save();
+            }
+            catch(System.IO.FileNotFoundException) {
+            }
+
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)       //SEARCH BAR CHANGED
@@ -410,19 +427,7 @@ namespace osu_mp3
         }
 
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
-        {
-            ind = (int)songListBox.SelectedValue;
 
-            foreach (Song song in songs)
-            {
-                if (song.index == ind)
-                {
-                    copyAndTag(song);
-                    break;
-                }
-            }
-        }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -438,6 +443,92 @@ namespace osu_mp3
         {
 
         }
+        private void exportSelected(object sender, EventArgs e)
+        {
+            ind = (int)songListBox.SelectedValue;
+
+            foreach (Song song in songs)
+            {
+                if (song.index == ind)
+                {
+                    copyAndTag(song);
+                    break;
+                }
+            }
+        }
+
+        private void exportSearchResult(object sender, EventArgs e)
+        {
+            if (!exporting && !refreshing)
+            {
+                exporting = true;
+                exporter2.RunWorkerAsync();
+            }
+
+        }
+
+        private void exportAll(object sender, EventArgs e)
+        {
+            if(!exporting && !refreshing)
+            {
+                exporting = true;
+                exporter1.RunWorkerAsync();
+            }
+        }
+
+        void exporter1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            int count = 0;
+            int total = songs.Count;
+            progressBar.Visible = true;
+
+            foreach (Song song in songs)
+            {
+                copyAndTag(song);
+                count++;
+                exporter1.ReportProgress((int)((count/total) * 100));
+            }
+
+        }
+
+        void exporter1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            progressBar.Value = e.ProgressPercentage;
+        }
+
+        void exporter1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            progressBar.Visible = false;
+            exporting = false;
+        }
+
+
+        void exporter2_DoWork(object sender, DoWorkEventArgs e)
+        {
+            int count = 0;
+            int total = songs.Count;
+            progressBar.Visible = true;
+
+            foreach (Song song in songs2)
+            {
+                copyAndTag(song);
+                count++;
+                exporter1.ReportProgress((int)((count / total) * 100));
+            }
+
+        }
+
+        void exporter2_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            progressBar.Value = e.ProgressPercentage;
+        }
+
+        void exporter2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            progressBar.Visible = false;
+            exporting = false;
+        }
+
 
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace osu_mp3
 {
-    partial class Form1
+    partial class OsuMp3
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OsuMp3));
             this.l_Name = new System.Windows.Forms.Label();
             this.name = new System.Windows.Forms.Label();
             this.l_Artist = new System.Windows.Forms.Label();
@@ -40,7 +40,10 @@
             this.menuOptions = new System.Windows.Forms.ToolStripDropDownButton();
             this.buttonChangeDir = new System.Windows.Forms.ToolStripMenuItem();
             this.buttonRefresh = new System.Windows.Forms.ToolStripMenuItem();
-            this.buttonExport = new System.Windows.Forms.ToolStripButton();
+            this.exportMenus = new System.Windows.Forms.ToolStripDropDownButton();
+            this.selectedSongToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.searchResultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.labelTotalSongs = new System.Windows.Forms.ToolStripLabel();
@@ -52,11 +55,13 @@
             this.b_next = new System.Windows.Forms.Button();
             this.b_previous = new System.Windows.Forms.Button();
             this.b_shuffle = new System.Windows.Forms.Button();
-            this.songImage = new System.Windows.Forms.PictureBox();
             this.mediaplayer = new AxWMPLib.AxWindowsMediaPlayer();
+            this.songImage = new System.Windows.Forms.PictureBox();
+            this.exporter1 = new System.ComponentModel.BackgroundWorker();
+            this.exporter2 = new System.ComponentModel.BackgroundWorker();
             this.toolStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.songImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mediaplayer)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.songImage)).BeginInit();
             this.SuspendLayout();
             // 
             // l_Name
@@ -119,7 +124,7 @@
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuOptions,
-            this.buttonExport,
+            this.exportMenus,
             this.toolStripSeparator1,
             this.progressBar,
             this.labelTotalSongs});
@@ -154,15 +159,39 @@
             this.buttonRefresh.Text = "Refresh";
             this.buttonRefresh.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
             // 
-            // buttonExport
+            // exportMenus
             // 
-            this.buttonExport.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.buttonExport.Image = ((System.Drawing.Image)(resources.GetObject("buttonExport.Image")));
-            this.buttonExport.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.buttonExport.Name = "buttonExport";
-            this.buttonExport.Size = new System.Drawing.Size(121, 22);
-            this.buttonExport.Text = "Export Selected Song";
-            this.buttonExport.Click += new System.EventHandler(this.toolStripButton1_Click);
+            this.exportMenus.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.exportMenus.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.selectedSongToolStripMenuItem,
+            this.searchResultToolStripMenuItem,
+            this.allToolStripMenuItem});
+            this.exportMenus.Image = ((System.Drawing.Image)(resources.GetObject("exportMenus.Image")));
+            this.exportMenus.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.exportMenus.Name = "exportMenus";
+            this.exportMenus.Size = new System.Drawing.Size(97, 22);
+            this.exportMenus.Text = "Export Songs...";
+            // 
+            // selectedSongToolStripMenuItem
+            // 
+            this.selectedSongToolStripMenuItem.Name = "selectedSongToolStripMenuItem";
+            this.selectedSongToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.selectedSongToolStripMenuItem.Text = "Selected Song";
+            this.selectedSongToolStripMenuItem.Click += new System.EventHandler(this.exportSelected);
+            // 
+            // searchResultToolStripMenuItem
+            // 
+            this.searchResultToolStripMenuItem.Name = "searchResultToolStripMenuItem";
+            this.searchResultToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.searchResultToolStripMenuItem.Text = "Search Result";
+            this.searchResultToolStripMenuItem.Click += new System.EventHandler(this.exportSearchResult);
+            // 
+            // allToolStripMenuItem
+            // 
+            this.allToolStripMenuItem.Name = "allToolStripMenuItem";
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.allToolStripMenuItem.Text = "All";
+            this.allToolStripMenuItem.Click += new System.EventHandler(this.exportAll);
             // 
             // toolStripSeparator1
             // 
@@ -258,6 +287,18 @@
             this.b_shuffle.UseVisualStyleBackColor = false;
             this.b_shuffle.Click += new System.EventHandler(this.b_shuffle_Click);
             // 
+            // mediaplayer
+            // 
+            this.mediaplayer.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.mediaplayer.Enabled = true;
+            this.mediaplayer.Location = new System.Drawing.Point(0, 289);
+            this.mediaplayer.Name = "mediaplayer";
+            this.mediaplayer.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("mediaplayer.OcxState")));
+            this.mediaplayer.Size = new System.Drawing.Size(579, 45);
+            this.mediaplayer.TabIndex = 17;
+            this.mediaplayer.PlayStateChange += new AxWMPLib._WMPOCXEvents_PlayStateChangeEventHandler(this.axWindowsMediaPlayer1_PlayStateChange);
+            this.mediaplayer.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.axWindowsMediaPlayer1_PreviewKeyDown);
+            // 
             // songImage
             // 
             this.songImage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -272,19 +313,7 @@
             this.songImage.TabStop = false;
             this.songImage.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
-            // mediaplayer
-            // 
-            this.mediaplayer.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.mediaplayer.Enabled = true;
-            this.mediaplayer.Location = new System.Drawing.Point(0, 289);
-            this.mediaplayer.Name = "mediaplayer";
-            this.mediaplayer.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("mediaplayer.OcxState")));
-            this.mediaplayer.Size = new System.Drawing.Size(579, 45);
-            this.mediaplayer.TabIndex = 17;
-            this.mediaplayer.PlayStateChange += new AxWMPLib._WMPOCXEvents_PlayStateChangeEventHandler(this.axWindowsMediaPlayer1_PlayStateChange);
-            this.mediaplayer.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.axWindowsMediaPlayer1_PreviewKeyDown);
-            // 
-            // Form1
+            // OsuMp3
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -306,14 +335,14 @@
             this.Controls.Add(this.l_Name);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MinimumSize = new System.Drawing.Size(595, 373);
-            this.Name = "Form1";
+            this.Name = "OsuMp3";
             this.Text = "osu!mp3";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.songImage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.mediaplayer)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.songImage)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -344,7 +373,12 @@
         private System.Windows.Forms.Button b_previous;
         private System.Windows.Forms.Button b_shuffle;
         private System.Windows.Forms.PictureBox songImage;
-        private System.Windows.Forms.ToolStripButton buttonExport;
+        private System.Windows.Forms.ToolStripDropDownButton exportMenus;
+        private System.Windows.Forms.ToolStripMenuItem selectedSongToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem searchResultToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem allToolStripMenuItem;
+        private System.ComponentModel.BackgroundWorker exporter1;
+        private System.ComponentModel.BackgroundWorker exporter2;
     }
 }
 
