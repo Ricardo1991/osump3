@@ -44,6 +44,8 @@
             this.selectedSongToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.searchResultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.changeExportDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.labelTotalSongs = new System.Windows.Forms.ToolStripLabel();
@@ -59,8 +61,6 @@
             this.songImage = new System.Windows.Forms.PictureBox();
             this.exporter1 = new System.ComponentModel.BackgroundWorker();
             this.exporter2 = new System.ComponentModel.BackgroundWorker();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.changeExportDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mediaplayer)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.songImage)).BeginInit();
@@ -119,7 +119,6 @@
             this.songListBox.Name = "songListBox";
             this.songListBox.Size = new System.Drawing.Size(245, 238);
             this.songListBox.TabIndex = 6;
-            this.songListBox.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             this.songListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseDoubleClick_1);
             // 
             // toolStrip1
@@ -196,6 +195,18 @@
             this.allToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.allToolStripMenuItem.Text = "All";
             this.allToolStripMenuItem.Click += new System.EventHandler(this.exportAll);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(199, 6);
+            // 
+            // changeExportDirectoryToolStripMenuItem
+            // 
+            this.changeExportDirectoryToolStripMenuItem.Name = "changeExportDirectoryToolStripMenuItem";
+            this.changeExportDirectoryToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.changeExportDirectoryToolStripMenuItem.Text = "Change Export Directory";
+            this.changeExportDirectoryToolStripMenuItem.Click += new System.EventHandler(this.changeExportDirectoryToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -315,19 +326,6 @@
             this.songImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.songImage.TabIndex = 21;
             this.songImage.TabStop = false;
-            this.songImage.Click += new System.EventHandler(this.pictureBox1_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(199, 6);
-            // 
-            // changeExportDirectoryToolStripMenuItem
-            // 
-            this.changeExportDirectoryToolStripMenuItem.Name = "changeExportDirectoryToolStripMenuItem";
-            this.changeExportDirectoryToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.changeExportDirectoryToolStripMenuItem.Text = "Change Export Directory";
-            this.changeExportDirectoryToolStripMenuItem.Click += new System.EventHandler(this.changeExportDirectoryToolStripMenuItem_Click);
             // 
             // OsuMp3
             // 
@@ -353,7 +351,6 @@
             this.MinimumSize = new System.Drawing.Size(595, 373);
             this.Name = "OsuMp3";
             this.Text = "osu!mp3";
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();

@@ -9,25 +9,25 @@ namespace osu_mp3
 {
     public partial class OsuMp3 : Form
     {
-        List<Song> songs = new List<Song>();
-        List<Song> songs2 = new List<Song>();
+        private List<Song> songs = new List<Song>();
+        private List<Song> songs2 = new List<Song>();
 
-        List<int> shuffleHistory= new List<int>();
+        private List<int> shuffleHistory = new List<int>();
 
-        int ind = 0;
-        int folders;
-        int counter = 0;
-        string[] subdirectoryEntries;
-        
-        string osuDir;
+        private int ind = 0;
+        private int folders;
+        private int counter = 0;
+        private string[] subdirectoryEntries;
+
+        private string osuDir;
 
         public bool SongEnded = true;
         public bool Shuffle = false;
 
-        Random rnd = new Random();
+        private Random rnd = new Random();
 
-        bool refreshing = true;
-        bool exporting = false;
+        private bool refreshing = true;
+        private bool exporting = false;
 
         public OsuMp3()
         {
@@ -48,14 +48,12 @@ namespace osu_mp3
             exporter2.ProgressChanged += new ProgressChangedEventHandler(exporter2_ProgressChanged);
             exporter2.RunWorkerCompleted += new RunWorkerCompletedEventHandler(exporter2_RunWorkerCompleted);
 
-            
-
             osuDir = @Settings.Default.dir;
 
             subdirectoryEntries = Directory.GetDirectories(@osuDir);
 
             progressBar.Visible = true;
-         
+
             loader1.RunWorkerAsync();
         }
 
@@ -69,8 +67,8 @@ namespace osu_mp3
                 shuffleHistory.Add(ind); //Add this song to the shuffle history
 
             foreach (Song song in songs)
-            { 
-                if(song.index == ind)
+            {
+                if (song.index == ind)
                 {
                     songDir = song.getmp3Dir();
                     mediaplayer.URL = songDir;
@@ -85,7 +83,7 @@ namespace osu_mp3
                     break;
                 }
             }
-            
+
             mediaplayer.Ctlcontrols.play();
         }
 
@@ -95,7 +93,7 @@ namespace osu_mp3
 
             if (Shuffle == false)
             {
-                if (songListBox.SelectedIndex + 1 == (int)songListBox.Items.Count)
+                if (songListBox.SelectedIndex + 1 == songListBox.Items.Count)
                 {
                     songListBox.SelectedIndex = 0;
                     id = (int)songListBox.SelectedValue;
@@ -105,9 +103,9 @@ namespace osu_mp3
                     songListBox.SelectedIndex = songListBox.SelectedIndex + 1;
                     id = (int)songListBox.SelectedValue;
                 }
-
             }
-            else {
+            else
+            {
                 if (songListBox.Items.Count > 1)
                 {
                     bool isNew = true;
@@ -117,8 +115,9 @@ namespace osu_mp3
                     {
                         shuffleHistory.Clear();
                     }
-                    do{
-                        songListBox.SelectedIndex = rnd.Next((int)songListBox.Items.Count);                       //Prevent the same song for being played twice
+                    do
+                    {
+                        songListBox.SelectedIndex = rnd.Next(songListBox.Items.Count);                       //Prevent the same song for being played twice
                         isNew = true;
 
                         foreach (int id2 in shuffleHistory)
@@ -126,8 +125,6 @@ namespace osu_mp3
                             if (id2 == (int)songListBox.SelectedValue || songListBox.SelectedIndex == previousSong) //Dont play the same song twice in a row
                                 isNew = false;
                         }
-
-
                     }
                     while (isNew == false);
 
@@ -141,14 +138,13 @@ namespace osu_mp3
             }
 
             playSong(id);
-
         }
 
         private void listBox1_MouseDoubleClick_1(object sender, MouseEventArgs e)
         {
             int id = (int)this.songListBox.SelectedValue;
 
-            if (id != System.Windows.Forms.ListBox.NoMatches)
+            if (id != ListBox.NoMatches)
             {
                 playSong(id);
             }
@@ -161,37 +157,48 @@ namespace osu_mp3
         }
 
         // On worker thread so do our thing!
-        void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             folders = subdirectoryEntries.Length;
             refreshing = true;
 
             foreach (string directory in subdirectoryEntries)
             {
-                float percentage = ((float)counter / (float)folders);
+                if (loader1.CancellationPending == true)
+                {
+                    refreshing = false;
+                    songs.Clear();
+                    return;
+                }
+                    
+                float percentage = (counter / folders);
                 loader1.ReportProgress((int)(percentage * 100));
-                songs.Add(new Song(directory, counter));
 
-                counter++;
+                Song s = new Song(directory, counter);
+
+                if (s.beatTotal >= 1){
+                    songs.Add(s);
+                    counter++;
+                } 
             }
         }
 
-        void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             //int total = 0;
             progressBar.Visible = false;
 
-            this.songListBox.DataSource = null;
-            this.songListBox.DataSource = songs;
+            songListBox.DataSource = null;
+            songListBox.DataSource = songs;
 
-            this.songListBox.DisplayMember = "fullname";
-            this.songListBox.ValueMember = "index";
+            songListBox.DisplayMember = "fullname";
+            songListBox.ValueMember = "index";
             labelTotalSongs.Text = counter.ToString() + " music(s) loaded in";
 
             refreshing = false;
         }
 
-        void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             progressBar.Value = e.ProgressPercentage;
         }
@@ -212,6 +219,9 @@ namespace osu_mp3
                 // the code here will be executed if the user presses Open in
                 // the dialog.
 
+                if (loader1.IsBusy)
+                    loader1.CancelAsync();
+
                 songs.Clear();
                 counter = 0;
 
@@ -226,13 +236,12 @@ namespace osu_mp3
             }
         }
 
-
         private void copyAndTag(Song song)
         {
-            string sourcePath = System.IO.Path.Combine(Settings.Default.dir , song.Folder);
+            string sourcePath = System.IO.Path.Combine(Settings.Default.dir, song.Folder);
             string fileName = song.Mp3file;
-            string fileExtension=System.IO.Path.GetExtension(fileName);
-            string newFileName = song.ColectionID +" - "+ song.getname() + fileExtension;
+            string fileExtension = System.IO.Path.GetExtension(fileName);
+            string newFileName = song.ColectionID + " - " + song.getname() + fileExtension;
 
             foreach (char c in Path.GetInvalidFileNameChars())
             {
@@ -256,24 +265,22 @@ namespace osu_mp3
             string targetPath = @Settings.Default.exportDir + "\\" + artistFolder;
 
             targetPath = targetPath.Replace("*", "");
-            
+
             foreach (char b in Path.GetInvalidPathChars())
             {
                 targetPath = targetPath.Replace(b.ToString(), "");
             }
 
-
             string destFile = System.IO.Path.Combine(targetPath, newFileName);
 
-
-            if (!System.IO.Directory.Exists(targetPath))
+            if (!Directory.Exists(targetPath))
             {
-                System.IO.Directory.CreateDirectory(targetPath);
+                Directory.CreateDirectory(targetPath);
             }
 
             try
             {
-                System.IO.File.Copy(sourceFile, destFile, true);
+                File.Copy(sourceFile, destFile, true);
 
                 TagLib.File f = TagLib.File.Create(destFile);
                 f.Tag.Performers = new[] { song.getartist() };
@@ -282,9 +289,9 @@ namespace osu_mp3
                 f.Tag.Album = song.getSource();
                 f.Save();
             }
-            catch(System.IO.FileNotFoundException) {
+            catch (FileNotFoundException)
+            {
             }
-
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)       //SEARCH BAR CHANGED
@@ -314,24 +321,20 @@ namespace osu_mp3
                         if (query != searchResults[0])
                         {
                             if (!song.getartist().ToLower().Contains(query) &&
-                                !song.getname().ToLower().Contains(query)   &&
-                                !song.getTags().ToLower().Contains(query)   &&
+                                !song.getname().ToLower().Contains(query) &&
+                                !song.getTags().ToLower().Contains(query) &&
                                 !song.getSource().ToLower().Contains(query))
                             {
                                 songs2.Remove(song);
                             }
                         }
-
                     }
-
-
                 }
             }
             else
             {
                 this.songListBox.DataSource = null;
                 this.songListBox.DataSource = songs;
-
             }
             this.songListBox.DisplayMember = "fullname";
             this.songListBox.ValueMember = "index";
@@ -353,7 +356,6 @@ namespace osu_mp3
             {
                 SongEnded = true;
                 CheckSong.Start();
-                
             }
         }
 
@@ -368,7 +370,7 @@ namespace osu_mp3
 
             if (songListBox.SelectedIndex - 1 < 0)
             {
-                songListBox.SelectedIndex = (int)songListBox.Items.Count-1;
+                songListBox.SelectedIndex = (int)songListBox.Items.Count - 1;
                 ind = (int)songListBox.SelectedValue;
             }
             else
@@ -389,8 +391,8 @@ namespace osu_mp3
                 Shuffle = true;
                 b_previous.Enabled = false;
             }
-            else {
-
+            else
+            {
                 this.b_shuffle.BackColor = System.Drawing.Color.IndianRed;
                 Shuffle = false;
                 b_previous.Enabled = true;
@@ -402,27 +404,10 @@ namespace osu_mp3
             if (e.KeyCode == Keys.MediaNextTrack)
             {
                 playnextSong(ind);
-            
             }
             if (e.KeyCode == Keys.MediaPreviousTrack)
             {
-                if (Shuffle == false)
-                {
-                    mediaplayer.Ctlcontrols.stop();
-
-                    if (songListBox.SelectedIndex - 1 < 0)
-                    {
-                        songListBox.SelectedIndex = (int)songListBox.Items.Count - 1;
-                        ind = (int)songListBox.SelectedValue;
-                    }
-                    else
-                    {
-                        songListBox.SelectedIndex = songListBox.SelectedIndex - 1;
-                        ind = (int)songListBox.SelectedValue;
-                    }
-
-                    playSong(ind);
-                }
+                playPrevious();
             }
         }
 
@@ -431,47 +416,34 @@ namespace osu_mp3
             if (e.KeyCode == Keys.MediaNextTrack)
             {
                 playnextSong(ind);
-
             }
             if (e.KeyCode == Keys.MediaPreviousTrack)
             {
-                if (Shuffle == false)
-                {
-                    mediaplayer.Ctlcontrols.stop();
-
-                    if (songListBox.SelectedIndex - 1 < 0)
-                    {
-                        songListBox.SelectedIndex = (int)songListBox.Items.Count - 1;
-                        ind = (int)songListBox.SelectedValue;
-                    }
-                    else
-                    {
-                        songListBox.SelectedIndex = songListBox.SelectedIndex - 1;
-                        ind = (int)songListBox.SelectedValue;
-                    }
-
-                    playSong(ind);
-                }
+                playPrevious();
             }
         }
 
-
-
-
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void playPrevious()
         {
+            if (Shuffle == false)
+            {
+                mediaplayer.Ctlcontrols.stop();
 
+                if (songListBox.SelectedIndex - 1 < 0)
+                {
+                    songListBox.SelectedIndex = (int)songListBox.Items.Count - 1;
+                    ind = (int)songListBox.SelectedValue;
+                }
+                else
+                {
+                    songListBox.SelectedIndex = songListBox.SelectedIndex - 1;
+                    ind = (int)songListBox.SelectedValue;
+                }
+
+                playSong(ind);
+            }
         }
 
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
         private void exportSelected(object sender, EventArgs e)
         {
             ind = (int)songListBox.SelectedValue;
@@ -492,38 +464,36 @@ namespace osu_mp3
                 exporter2.RunWorkerAsync();
 
             progressBar.Visible = true;
-
         }
 
         private void exportAll(object sender, EventArgs e)
         {
-            if(!exporting && !refreshing)
+            if (!exporting && !refreshing)
                 exporter1.RunWorkerAsync();
 
             progressBar.Visible = true;
-            
         }
 
-        void exporter1_DoWork(object sender, DoWorkEventArgs e)
+        private void exporter1_DoWork(object sender, DoWorkEventArgs e)
         {
             int count = 0;
             int total = songs.Count;
-            
+
             exporting = true;
 
             foreach (Song song in songs)
             {
                 copyAndTag(song);
                 count++;
-                exporter1.ReportProgress((int)((count/total) * 100));
+                exporter1.ReportProgress((int)((count / total) * 100));
             }
-
         }
 
-        void exporter2_DoWork(object sender, DoWorkEventArgs e)
+        private void exporter2_DoWork(object sender, DoWorkEventArgs e)
         {
             int count = 0;
             int total = songs2.Count;
+
             exporting = true;
 
             foreach (Song song in songs2)
@@ -532,26 +502,25 @@ namespace osu_mp3
                 count++;
                 exporter2.ReportProgress((int)((count / total) * 100));
             }
-
         }
 
-        void exporter1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void exporter1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             progressBar.Value = e.ProgressPercentage;
         }
 
-        void exporter2_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void exporter2_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             progressBar.Value = e.ProgressPercentage;
         }
 
-
-        void exporter1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void exporter1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             progressBar.Visible = false;
             exporting = false;
         }
-        void exporter2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+
+        private void exporter2_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             progressBar.Visible = false;
             exporting = false;
@@ -567,7 +536,5 @@ namespace osu_mp3
                 Settings.Default.Save();
             }
         }
-
-
     }
 }
