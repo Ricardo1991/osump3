@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="dir" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\Program Files (x86)\osu!\Songs</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="exportDir" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\osump3</Value>

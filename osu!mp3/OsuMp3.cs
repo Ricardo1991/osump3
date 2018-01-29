@@ -19,8 +19,6 @@ namespace osu_mp3
         private int counter = 0;
         private string[] subdirectoryEntries;
 
-        private string osuDir;
-
         public bool SongEnded = true;
         public bool Shuffle = false;
 
@@ -32,11 +30,26 @@ namespace osu_mp3
         public OsuMp3()
         {
             InitializeComponent();
+            initiateWorkers();
 
+
+            if (String.IsNullOrWhiteSpace(Settings.Default.dir))
+            {
+                if (getDirectory())
+                    readOsuFiles();
+            }
+            else
+                readOsuFiles();
+
+        }
+
+        private void initiateWorkers()
+        {
             loader1.WorkerReportsProgress = true;
             loader1.DoWork += new DoWorkEventHandler(backgroundWorker1_DoWork);
             loader1.ProgressChanged += new ProgressChangedEventHandler(backgroundWorker1_ProgressChanged);
             loader1.RunWorkerCompleted += new RunWorkerCompletedEventHandler(backgroundWorker_RunWorkerCompleted);
+            loader1.WorkerSupportsCancellation = true;
 
             exporter1.WorkerReportsProgress = true;
             exporter1.DoWork += new DoWorkEventHandler(exporter1_DoWork);
@@ -47,13 +60,46 @@ namespace osu_mp3
             exporter2.DoWork += new DoWorkEventHandler(exporter2_DoWork);
             exporter2.ProgressChanged += new ProgressChangedEventHandler(exporter2_ProgressChanged);
             exporter2.RunWorkerCompleted += new RunWorkerCompletedEventHandler(exporter2_RunWorkerCompleted);
+        }
 
-            osuDir = @Settings.Default.dir;
+        private Boolean getDirectory()
+        {
+            DialogResult result = this.folderBrowserDialog1.ShowDialog();
+            if (result == DialogResult.OK)
+            {
 
-            subdirectoryEntries = Directory.GetDirectories(@osuDir);
+                Settings.Default.dir = this.folderBrowserDialog1.SelectedPath;
+                Settings.Default.Save();
+                return true;
+            }
+            else
+                return false;
+        }
+
+
+        private void readOsuFiles()
+        {
+            if (loader1.IsBusy)
+                loader1.CancelAsync();
+
+            songs.Clear();
+            counter = 0;
+
+            string[] files = Directory.GetFiles(Settings.Default.dir);
+            subdirectoryEntries = Directory.GetDirectories(Settings.Default.dir);
+
+            foreach (string file in files)
+            {
+                if (file.ToLower().EndsWith("osu!.exe"))
+                {
+                    //We are on the root folder
+                    subdirectoryEntries = Directory.GetDirectories(Settings.Default.dir + "\\Songs");
+                    Settings.Default.Save();
+                    break;
+                }
+            }
 
             progressBar.Visible = true;
-
             loader1.RunWorkerAsync();
         }
 
@@ -142,6 +188,7 @@ namespace osu_mp3
 
         private void listBox1_MouseDoubleClick_1(object sender, MouseEventArgs e)
         {
+            if (this.songListBox.SelectedItem == null) return;
             int id = (int)this.songListBox.SelectedValue;
 
             if (id != ListBox.NoMatches)
@@ -170,16 +217,21 @@ namespace osu_mp3
                     songs.Clear();
                     return;
                 }
-                    
+                  
                 float percentage = (counter / folders);
                 loader1.ReportProgress((int)(percentage * 100));
 
-                Song s = new Song(directory, counter);
+                try
+                {
+                    Song s = new Song(directory, counter);
 
-                if (s.beatTotal >= 1){
-                    songs.Add(s);
-                    counter++;
-                } 
+                    if (s.beatTotal >= 1)
+                    {
+                        songs.Add(s);
+                        counter++;
+                    }
+                }
+                catch { }
             }
         }
 
@@ -205,35 +257,17 @@ namespace osu_mp3
 
         private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            progressBar.Visible = true;
-            songs.Clear();
-            counter = 0;
-            loader1.RunWorkerAsync();
+            readOsuFiles();
         }
 
         private void changeDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DialogResult result = this.folderBrowserDialog1.ShowDialog();
-            if (result == DialogResult.OK)
+            if (getDirectory())
             {
-                // the code here will be executed if the user presses Open in
-                // the dialog.
-
-                if (loader1.IsBusy)
-                    loader1.CancelAsync();
-
-                songs.Clear();
-                counter = 0;
-
-                osuDir = this.folderBrowserDialog1.SelectedPath;
-                subdirectoryEntries = Directory.GetDirectories(@osuDir);
-
-                progressBar.Visible = true;
-                loader1.RunWorkerAsync();
-
-                Settings.Default.dir = @osuDir;
-                Settings.Default.Save();
+                readOsuFiles();
             }
+
+
         }
 
         private void copyAndTag(Song song)
