@@ -218,7 +218,7 @@ namespace osu_mp3
                     return;
                 }
                   
-                float percentage = (counter / folders);
+                float percentage = ((float)counter / folders);
                 loader1.ReportProgress((int)(percentage * 100));
 
                 try
