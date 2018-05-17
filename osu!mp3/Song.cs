@@ -15,6 +15,9 @@ namespace osu_mp3
         private string source = " ";        //Song Source
         private int colectionID;            //BeatMapColectonID
         private int beatID;                 //BeatMap ID
+        string videoName = "";
+        bool videoPresent;
+        bool hasVideo;
 
         public string Folder
         {
@@ -40,6 +43,9 @@ namespace osu_mp3
         public string fullName { get; set; }
         public string imageFile { get; set; } //name of the BG image
         public int index { get; set; }
+        public bool VideoPresent { get => videoPresent; set => videoPresent = value; }
+        public string VideoName { get => videoName; set => videoName = value; }
+        public bool HasVideo { get => hasVideo; set => hasVideo = value; }
 
         public string getTags()
         {
@@ -136,6 +142,11 @@ namespace osu_mp3
             return id;
         }
 
+        public override string ToString()
+        {
+            return "https://osu.ppy.sh/beatmapsets/" + this.ColectionID;
+        }
+
         private void setSongInfo(string file)
         {
             string line;
@@ -168,6 +179,12 @@ namespace osu_mp3
                 {
                     imageFile = line.Split(new char[] { '"' }, 3)[1];
                     hasPicture = true;
+                }
+                else if ((line.Contains(".avi")))
+                {
+                    videoName = line.Split(new char[] { '"' }, 3)[1];
+                    HasVideo = true;
+                    videoPresent = File.Exists(dir + "\\" + VideoName);
                 }
                 else if (line.Contains("BeatmapSetID:"))
                 {

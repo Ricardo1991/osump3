@@ -61,6 +61,8 @@
             this.songImage = new System.Windows.Forms.PictureBox();
             this.exporter1 = new System.ComponentModel.BackgroundWorker();
             this.exporter2 = new System.ComponentModel.BackgroundWorker();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.exportListOfMapsWithoutVideoPresentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mediaplayer)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.songImage)).BeginInit();
@@ -168,6 +170,8 @@
             this.searchResultToolStripMenuItem,
             this.allToolStripMenuItem,
             this.toolStripSeparator2,
+            this.exportListOfMapsWithoutVideoPresentToolStripMenuItem,
+            this.toolStripSeparator3,
             this.changeExportDirectoryToolStripMenuItem});
             this.exportMenus.Image = ((System.Drawing.Image)(resources.GetObject("exportMenus.Image")));
             this.exportMenus.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -178,33 +182,33 @@
             // selectedSongToolStripMenuItem
             // 
             this.selectedSongToolStripMenuItem.Name = "selectedSongToolStripMenuItem";
-            this.selectedSongToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.selectedSongToolStripMenuItem.Size = new System.Drawing.Size(289, 22);
             this.selectedSongToolStripMenuItem.Text = "Selected Song";
             this.selectedSongToolStripMenuItem.Click += new System.EventHandler(this.exportSelected);
             // 
             // searchResultToolStripMenuItem
             // 
             this.searchResultToolStripMenuItem.Name = "searchResultToolStripMenuItem";
-            this.searchResultToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.searchResultToolStripMenuItem.Size = new System.Drawing.Size(289, 22);
             this.searchResultToolStripMenuItem.Text = "Search Result";
             this.searchResultToolStripMenuItem.Click += new System.EventHandler(this.exportSearchResult);
             // 
             // allToolStripMenuItem
             // 
             this.allToolStripMenuItem.Name = "allToolStripMenuItem";
-            this.allToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.allToolStripMenuItem.Size = new System.Drawing.Size(289, 22);
             this.allToolStripMenuItem.Text = "All";
             this.allToolStripMenuItem.Click += new System.EventHandler(this.exportAll);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(199, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(286, 6);
             // 
             // changeExportDirectoryToolStripMenuItem
             // 
             this.changeExportDirectoryToolStripMenuItem.Name = "changeExportDirectoryToolStripMenuItem";
-            this.changeExportDirectoryToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.changeExportDirectoryToolStripMenuItem.Size = new System.Drawing.Size(289, 22);
             this.changeExportDirectoryToolStripMenuItem.Text = "Change Export Directory";
             this.changeExportDirectoryToolStripMenuItem.Click += new System.EventHandler(this.changeExportDirectoryToolStripMenuItem_Click);
             // 
@@ -327,6 +331,18 @@
             this.songImage.TabIndex = 21;
             this.songImage.TabStop = false;
             // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(286, 6);
+            // 
+            // exportListOfMapsWithoutVideoPresentToolStripMenuItem
+            // 
+            this.exportListOfMapsWithoutVideoPresentToolStripMenuItem.Name = "exportListOfMapsWithoutVideoPresentToolStripMenuItem";
+            this.exportListOfMapsWithoutVideoPresentToolStripMenuItem.Size = new System.Drawing.Size(289, 22);
+            this.exportListOfMapsWithoutVideoPresentToolStripMenuItem.Text = "Export list of maps without video present";
+            this.exportListOfMapsWithoutVideoPresentToolStripMenuItem.Click += new System.EventHandler(this.exportListOfMapsWithoutVideoPresentToolStripMenuItem_Click);
+            // 
             // OsuMp3
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -394,6 +410,8 @@
         private System.ComponentModel.BackgroundWorker exporter2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem changeExportDirectoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportListOfMapsWithoutVideoPresentToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }
 

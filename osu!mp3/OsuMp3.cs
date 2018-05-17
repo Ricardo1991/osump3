@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace osu_mp3
@@ -26,6 +27,10 @@ namespace osu_mp3
 
         private bool refreshing = true;
         private bool exporting = false;
+
+
+        static object _ActiveWorkersLock = new object();
+        static int _CountOfActiveWorkers;
 
         public OsuMp3()
         {
@@ -157,13 +162,13 @@ namespace osu_mp3
                     bool isNew = true;
                     int previousSong = songListBox.SelectedIndex;
 
-                    if (shuffleHistory.Count >= songListBox.Items.Count)                                       //If all songs were played, clear and start over
+                    if (shuffleHistory.Count >= songListBox.Items.Count)                                            //If all songs were played, clear and start over
                     {
                         shuffleHistory.Clear();
                     }
                     do
                     {
-                        songListBox.SelectedIndex = rnd.Next(songListBox.Items.Count);                       //Prevent the same song for being played twice
+                        songListBox.SelectedIndex = rnd.Next(songListBox.Items.Count);                              //Prevent the same song for being played twice
                         isNew = true;
 
                         foreach (int id2 in shuffleHistory)
@@ -214,13 +219,31 @@ namespace osu_mp3
                 if (loader1.CancellationPending == true)
                 {
                     refreshing = false;
-                    songs.Clear();
                     return;
                 }
-                  
-                float percentage = ((float)counter / folders);
-                loader1.ReportProgress((int)(percentage * 100));
 
+                lock (_ActiveWorkersLock)
+                    ++_CountOfActiveWorkers;
+                ThreadPool.QueueUserWorkItem(readBeatmap, directory);
+
+                lock (_ActiveWorkersLock)
+                {
+                    while (_CountOfActiveWorkers > 0)
+                    {
+                        float percentage = ((float)counter / folders);
+                        loader1.ReportProgress((int)(percentage * 100));
+                        Monitor.Wait(_ActiveWorkersLock);
+                    }
+                        
+                }
+            }
+        }
+
+        private void readBeatmap(object state)
+        {
+            string directory = (string)state;
+            try
+            {
                 try
                 {
                     Song s = new Song(directory, counter);
@@ -233,6 +256,15 @@ namespace osu_mp3
                 }
                 catch { }
             }
+            finally
+            {
+                lock (_ActiveWorkersLock)
+                {
+                    --_CountOfActiveWorkers;
+                    Monitor.PulseAll(_ActiveWorkersLock);
+                }
+            }
+            
         }
 
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -568,6 +600,21 @@ namespace osu_mp3
                 string dir = this.folderBrowserDialog1.SelectedPath;
                 Settings.Default.exportDir = @dir;
                 Settings.Default.Save();
+            }
+        }
+
+        private void exportListOfMapsWithoutVideoPresentToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (System.IO.StreamWriter file =
+            new System.IO.StreamWriter("BeatMaps.txt"))
+            {
+                foreach (Song song in songs)
+                {
+                    if (song.HasVideo && !song.VideoPresent)
+                    {
+                        file.WriteLine(song.ToString());
+                    }
+                }
             }
         }
     }
